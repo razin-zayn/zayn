@@ -1,0 +1,53 @@
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+														to declare the variables we use																							
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/                                                        
+#include <Servo.h>		//To declare the servo library
+Servo myservo;			//To create a servo object we control  
+int pos = 20;			//To determinte the original position of our servo  
+const int trigPin = 5;	//A trigger pin so we can send US signal
+const int echoPin = 6;	//A echo pin that will stay on untill receives back signal
+const int led = 13;		//An led variable
+
+long duration;			//A duration variable that we can save for time and distance
+float distance;			//A duration variable in decimal points
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+														to set up the variables so it can be funtioning																							
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/ 
+void setup() 
+{
+  myservo.attach(11);			//To attach the servo to arduino
+  pinMode(trigPin, OUTPUT);		//To set pin as output
+  pinMode(echoPin, INPUT);		//To set pin as input
+  pinMode(led, OUTPUT);			//Set pin as output for led
+  myservo.write(pos);			//Our determined position of servo
+}
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+														to set up the variables we use in a loop																							
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/ 
+void loop() 
+{
+  Serial.begin(9600);
+  digitalWrite(trigPin, LOW);	//Turn of the trigger pin
+  delayMicroseconds(2);			//Delay for 2 miliseconds
+  digitalWrite(trigPin, HIGH);	//Turn on the servo
+  delayMicroseconds(10);		//Delay for 10 miliseconds
+  digitalWrite(trigPin, LOW);	//Turn off the servo
+
+  duration = pulseIn(echoPin, HIGH);	
+  distance = 0.034*(duration/2);		//The distance we times to get in cm
+  Serial.println(distance);				//To print the vakue calculated
+  
+  
+  if (distance < 30)			//If distance less than 30cm
+  {
+    digitalWrite(led,HIGH);		//Turn on LED
+    myservo.write(pos+160);		//Turns the servo motor open dustbin
+    delay(1000);				//Delay 10 seconds
+  }
+  else							//Besides above more than 30cm 
+  {
+    digitalWrite(led,LOW);		//Turn off LED
+      myservo.write(pos);		//Servo go back to original position dustbin close
+  }
+  delay(300);					//DElay 3 miliseconds
+}
